@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 
-project(categories_classifier)
+project(classifier)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -14,6 +14,6 @@ set(SOURCE_FILES
         src/program.hpp
         )
 
-add_executable(categories_classifier ${SOURCE_FILES})
-target_link_libraries(categories_classifier -lspeed -lstdc++fs)
-install(TARGETS categories_classifier DESTINATION bin)
+add_executable(classifier ${SOURCE_FILES})
+target_link_libraries(classifier -lspeed -lstdc++fs)
+install(TARGETS classifier DESTINATION bin)

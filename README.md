@@ -1,8 +1,8 @@
-### categories_classifier ###
+### classifier ###
 
-categories_classifier is a simple C++ program whose propose is classify folders using json files for
-specify the categories and then create symbolic links to point the entries. For more information use 
-`./categories_classifier --help` command.
+classifier is a simple C++ program whose propose is classify folders using json files for
+specify the categories and then create symbolic links to point the entries in the categories 
+directories. For more information use `./classifier --help` command.
 
 ### Build ###
 
