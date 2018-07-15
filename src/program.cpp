@@ -56,9 +56,18 @@ bool program::execute_directory(const std::filesystem::path& cur_dir_pth) const
             {
                 if (categories_fles_nmes_.count(x.path().filename()) > 0)
                 {
+                    std::cout << spdios::set_light_blue_text
+                              << "Parsing categories file " << x.path().filename()
+                              << " in " << cur_dir_pth;
+                    
                     if (!parse_categories_file(cur_dir_pth, x.path()))
                     {
                         sucss = false;
+                        std::cout << spdios::set_light_red_text << " [fail]" << spdios::newl;
+                    }
+                    else
+                    {
+                        std::cout << spdios::set_light_green_text << " [ok]" << spdios::newl;
                     }
                 }
             }
