@@ -32,11 +32,11 @@ namespace classifier {
 program::program(
         std::filesystem::path src_pth,
         std::filesystem::path dest_pth,
-        std::unordered_set<std::string> categories_fles_nmes
+        std::vector<std::string> catg_fles_nmes
 )
         : src_pth_(std::move(src_pth))
         , dest_pth_(std::move(dest_pth))
-        , categories_fles_nmes_(std::move(categories_fles_nmes))
+        , catg_fles_nmes_(std::move(catg_fles_nmes))
 {
     char buf[PATH_MAX + 1] = {0};
     
@@ -65,32 +65,38 @@ int program::execute()
 
 bool program::execute_directory(const std::filesystem::path& cur_dir_pth) const
 {
+    std::filesystem::path cur_catg_fle_pth;
     bool sucss = true;
+    
+    cur_catg_fle_pth = cur_dir_pth;
+    cur_catg_fle_pth /= ".";
+    
+    for (auto& x : catg_fles_nmes_)
+    {
+        cur_catg_fle_pth.replace_filename(x);
+        
+        if (std::filesystem::is_regular_file(cur_catg_fle_pth))
+        {
+            std::cout << spdios::set_light_blue_text
+                      << "Parsing categories file " << cur_catg_fle_pth;
+    
+            if (!parse_categories_file(cur_dir_pth, cur_catg_fle_pth))
+            {
+                sucss = false;
+                std::cout << spdios::set_light_red_text << " [fail]" << spdios::newl;
+            }
+            else
+            {
+                std::cout << spdios::set_light_green_text << " [ok]" << spdios::newl;
+            }
+        }
+    }
     
     try
     {
         for (auto& x : std::filesystem::directory_iterator(cur_dir_pth))
         {
-            if (std::filesystem::is_regular_file(x))
-            {
-                if (categories_fles_nmes_.count(x.path().filename()) > 0)
-                {
-                    std::cout << spdios::set_light_blue_text
-                              << "Parsing categories file " << x.path().filename()
-                              << " in " << cur_dir_pth;
-                    
-                    if (!parse_categories_file(cur_dir_pth, x.path()))
-                    {
-                        sucss = false;
-                        std::cout << spdios::set_light_red_text << " [fail]" << spdios::newl;
-                    }
-                    else
-                    {
-                        std::cout << spdios::set_light_green_text << " [ok]" << spdios::newl;
-                    }
-                }
-            }
-            else if (std::filesystem::is_directory(x) || std::filesystem::is_symlink(x))
+            if (std::filesystem::is_directory(x) || std::filesystem::is_symlink(x))
             {
                 if (!execute_directory(x.path()))
                 {
@@ -98,8 +104,6 @@ bool program::execute_directory(const std::filesystem::path& cur_dir_pth) const
                 }
             }
         }
-        
-        return sucss;
     }
     catch (const std::filesystem::filesystem_error& fe)
     {
@@ -109,12 +113,14 @@ bool program::execute_directory(const std::filesystem::path& cur_dir_pth) const
     
         return false;
     }
+    
+    return sucss;
 }
 
 
 bool program::parse_categories_file(
         const std::filesystem::path& cur_dir_pth,
-        const std::filesystem::path& categories_fle
+        const std::filesystem::path& catg_fle_pth
 ) const
 {
     namespace pt = boost::property_tree;
@@ -125,12 +131,14 @@ bool program::parse_categories_file(
         std::filesystem::path cur_dest_pth;
         bool sucss = true;
     
-        pt::read_json(categories_fle, root);
+        pt::read_json(catg_fle_pth, root);
+    
+        cur_dest_pth = dest_pth_;
+        cur_dest_pth /= ".";
         
         for (auto& x : root)
         {
-            cur_dest_pth = dest_pth_;
-            cur_dest_pth /= x.first;
+            cur_dest_pth.replace_filename(x.first);
             
             if (!std::filesystem::exists(cur_dest_pth))
             {

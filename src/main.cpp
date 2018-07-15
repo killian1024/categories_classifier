@@ -35,20 +35,10 @@ int main(int argc, char* argv[])
     ap.add_foreign_arg("DESTINATION-DIR", "Destination directory", "", {spdap::avt_t::RWX_DIR});
     ap.parse_args((unsigned int)argc, argv);
     
-    std::unordered_set<std::string> categories_fles_nmes;
-    for (auto& x : ap.get_arg_values("--categories-files"))
-    {
-        categories_fles_nmes.insert(x.as<std::string>());
-    }
-    if (categories_fles_nmes.empty())
-    {
-        categories_fles_nmes.insert(".categories.json");
-    }
-    
     classifier::program prog(
             ap.get_front_arg_value_as<std::filesystem::path>("SOURCE-DIR"),
             ap.get_front_arg_value_as<std::filesystem::path>("DESTINATION-DIR"),
-            std::move(categories_fles_nmes)
+            ap.get_arg_values_as<std::string>("--categories-files", {".categories.json"})
     );
     
     return prog.execute();

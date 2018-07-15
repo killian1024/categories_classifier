@@ -26,7 +26,7 @@
 
 #include <filesystem>
 #include <string>
-#include <unordered_set>
+#include <vector>
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -41,7 +41,7 @@ public:
     program(
             std::filesystem::path src_pth,
             std::filesystem::path dest_pth,
-            std::unordered_set<std::string> categories_fles_nmes
+            std::vector<std::string> catg_fles_nmes
     );
     
     int execute();
@@ -51,7 +51,7 @@ private:
     
     bool parse_categories_file(
             const std::filesystem::path& cur_dir_pth,
-            const std::filesystem::path& categories_fle
+            const std::filesystem::path& catg_fle_pth
     ) const;
     
     bool make_symlink(
@@ -65,7 +65,7 @@ private:
     
     std::filesystem::path dest_pth_;
     
-    std::unordered_set<std::string> categories_fles_nmes_;
+    std::vector<std::string> catg_fles_nmes_;
 };
 
 
