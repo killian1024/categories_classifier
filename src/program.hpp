@@ -47,16 +47,16 @@ public:
     int execute();
 
 private:
-    bool execute_directory(const std::filesystem::path& cur_dir_pth) const;
+    bool execute_directory(const std::filesystem::path& dir_pth) const;
     
     bool parse_categories_file(
-            const std::filesystem::path& cur_dir_pth,
-            const std::filesystem::path& catg_fle_pth
+            const std::filesystem::path& dir_pth,
+            const std::filesystem::path& catg_pth
     ) const;
     
     bool make_symlink(
-            const std::filesystem::path& cur_dir_pth,
-            std::filesystem::path cur_dest_pth,
+            const std::filesystem::path& dir_pth,
+            const std::filesystem::path& dest_pth,
             boost::property_tree::ptree& nod
     ) const;
 

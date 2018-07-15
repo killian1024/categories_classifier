@@ -63,24 +63,24 @@ int program::execute()
 }
 
 
-bool program::execute_directory(const std::filesystem::path& cur_dir_pth) const
+bool program::execute_directory(const std::filesystem::path& dir_pth) const
 {
-    std::filesystem::path cur_catg_fle_pth;
+    std::filesystem::path catg_pth;
     bool sucss = true;
     
-    cur_catg_fle_pth = cur_dir_pth;
-    cur_catg_fle_pth /= ".";
+    catg_pth = dir_pth;
+    catg_pth /= ".";
     
     for (auto& x : catg_fles_nmes_)
     {
-        cur_catg_fle_pth.replace_filename(x);
+        catg_pth.replace_filename(x);
         
-        if (std::filesystem::is_regular_file(cur_catg_fle_pth))
+        if (std::filesystem::is_regular_file(catg_pth))
         {
             std::cout << spdios::set_light_blue_text
-                      << "Parsing categories file " << cur_catg_fle_pth;
+                      << "Parsing categories file " << catg_pth;
     
-            if (!parse_categories_file(cur_dir_pth, cur_catg_fle_pth))
+            if (!parse_categories_file(dir_pth, catg_pth))
             {
                 sucss = false;
                 std::cout << spdios::set_light_red_text << " [fail]" << spdios::newl;
@@ -94,7 +94,7 @@ bool program::execute_directory(const std::filesystem::path& cur_dir_pth) const
     
     try
     {
-        for (auto& x : std::filesystem::directory_iterator(cur_dir_pth))
+        for (auto& x : std::filesystem::directory_iterator(dir_pth))
         {
             if (std::filesystem::is_directory(x) || std::filesystem::is_symlink(x))
             {
@@ -108,7 +108,7 @@ bool program::execute_directory(const std::filesystem::path& cur_dir_pth) const
     catch (const std::filesystem::filesystem_error& fe)
     {
         std::cerr << spdios::set_light_red_text
-                  << "Error executing in directory: " << cur_dir_pth
+                  << "Error executing in directory: " << dir_pth
                   << spdios::newl;
     
         return false;
@@ -119,8 +119,8 @@ bool program::execute_directory(const std::filesystem::path& cur_dir_pth) const
 
 
 bool program::parse_categories_file(
-        const std::filesystem::path& cur_dir_pth,
-        const std::filesystem::path& catg_fle_pth
+        const std::filesystem::path& dir_pth,
+        const std::filesystem::path& catg_pth
 ) const
 {
     namespace pt = boost::property_tree;
@@ -128,21 +128,21 @@ bool program::parse_categories_file(
     try
     {
         pt::ptree root;
-        std::filesystem::path cur_dest_pth;
+        std::filesystem::path dest_pth_bldr;
         bool sucss = true;
     
-        pt::read_json(catg_fle_pth, root);
+        pt::read_json(catg_pth, root);
     
-        cur_dest_pth = dest_pth_;
-        cur_dest_pth /= ".";
+        dest_pth_bldr = dest_pth_;
+        dest_pth_bldr /= ".";
         
         for (auto& x : root)
         {
-            cur_dest_pth.replace_filename(x.first);
+            dest_pth_bldr.replace_filename(x.first);
             
-            if (!std::filesystem::exists(cur_dest_pth))
+            if (!std::filesystem::exists(dest_pth_bldr))
             {
-                if (!spdsys::mkdir(cur_dest_pth.c_str()))
+                if (!spdsys::mkdir(dest_pth_bldr.c_str()))
                 {
                     sucss = false;
                     continue;
@@ -151,7 +151,7 @@ bool program::parse_categories_file(
 
             if (!x.second.data().empty())
             {
-                if (!make_symlink(cur_dir_pth, cur_dest_pth, x.second))
+                if (!make_symlink(dir_pth, dest_pth_bldr, x.second))
                 {
                     sucss = false;
                     continue;
@@ -161,7 +161,7 @@ bool program::parse_categories_file(
             {
                 for (auto& y : x.second)
                 {
-                    if (!make_symlink(cur_dir_pth, cur_dest_pth, y.second))
+                    if (!make_symlink(dir_pth, dest_pth_bldr, y.second))
                     {
                         sucss = false;
                         continue;
@@ -180,11 +180,13 @@ bool program::parse_categories_file(
 
 
 bool program::make_symlink(
-        const std::filesystem::path& cur_dir_pth,
-        std::filesystem::path cur_dest_pth,
+        const std::filesystem::path& dir_pth,
+        const std::filesystem::path& dest_pth,
         boost::property_tree::ptree& nod
 ) const
 {
+    std::filesystem::path dest_pth_bldr = dest_pth;
+    
     if (nod.data() == "false")
     {
         return true;
@@ -192,27 +194,27 @@ bool program::make_symlink(
     
     if (nod.data() != "true")
     {
-        cur_dest_pth /= nod.data();
+        dest_pth_bldr /= nod.data();
     }
     
-    if (!std::filesystem::exists(cur_dest_pth))
+    if (!std::filesystem::exists(dest_pth_bldr))
     {
-        if (!spdsys::mkdir(cur_dest_pth.c_str()))
+        if (!spdsys::mkdir(dest_pth_bldr.c_str()))
         {
             return false;
         }
     }
     
-    cur_dest_pth /= cur_dir_pth.filename();
-    if (std::filesystem::exists(cur_dest_pth))
+    dest_pth_bldr /= dir_pth.filename();
+    if (std::filesystem::exists(dest_pth_bldr))
     {
-        if (remove(cur_dest_pth.c_str()) != 0)
+        if (remove(dest_pth_bldr.c_str()) != 0)
         {
             return false;
         }
     }
     
-    return spdsys::symlink(cur_dir_pth.c_str(), cur_dest_pth.c_str());
+    return spdsys::symlink(dir_pth.c_str(), dest_pth_bldr.c_str());
 }
 
 
