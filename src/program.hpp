@@ -25,6 +25,7 @@
 #define CATEGORIES_CLASSIFIER_PROGRAM_HPP
 
 #include <filesystem>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -47,7 +48,11 @@ public:
     int execute();
 
 private:
-    bool execute_directory(const std::filesystem::path& dir_pth) const;
+    bool execute_directory(const std::filesystem::path& dir_pth);
+    
+    void visit_inode(const std::filesystem::path& dir_pth);
+    
+    bool is_inode_visited(const std::filesystem::path& dir_pth) const noexcept;
     
     bool parse_categories_file(
             const std::filesystem::path& dir_pth,
@@ -66,6 +71,8 @@ private:
     std::filesystem::path dest_pth_;
     
     std::vector<std::string> catg_fles_nmes_;
+    
+    std::set<std::uint64_t> vistd_inos_;
 };
 
 

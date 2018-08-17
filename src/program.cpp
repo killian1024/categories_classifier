@@ -63,10 +63,12 @@ int program::execute()
 }
 
 
-bool program::execute_directory(const std::filesystem::path& dir_pth) const
+bool program::execute_directory(const std::filesystem::path& dir_pth)
 {
     std::filesystem::path catg_pth;
     bool sucss = true;
+    
+    visit_inode(dir_pth);
     
     catg_pth = dir_pth;
     catg_pth /= ".";
@@ -96,7 +98,7 @@ bool program::execute_directory(const std::filesystem::path& dir_pth) const
     {
         for (auto& x : std::filesystem::directory_iterator(dir_pth))
         {
-            if (std::filesystem::is_directory(x) || std::filesystem::is_symlink(x))
+            if (std::filesystem::is_directory(x) && !is_inode_visited(x))
             {
                 if (!execute_directory(x.path()))
                 {
@@ -115,6 +117,18 @@ bool program::execute_directory(const std::filesystem::path& dir_pth) const
     }
     
     return sucss;
+}
+
+
+void program::visit_inode(const std::filesystem::path& dir_pth)
+{
+    vistd_inos_.insert(spdsys::get_file_inode(dir_pth.c_str()));
+}
+
+
+bool program::is_inode_visited(const std::filesystem::path& dir_pth) const noexcept
+{
+    return vistd_inos_.count(spdsys::get_file_inode(dir_pth.c_str())) > 0;
 }
 
 
