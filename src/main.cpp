@@ -18,21 +18,22 @@
  */
 
 #include <speed/speed.hpp>
+#include <speed/speed_alias.hpp>
 
 #include "program.hpp"
 
 
 int main(int argc, char* argv[])
 {
-    spdap::arg_parser ap("classifier");
+    spd::ap::arg_parser ap("classifier");
     ap.add_help_text("Options:");
     ap.add_key_value_arg({"--categories-files", "-cf"}, "Categories files names.",
-                         {spdap::avt_t::STRING}, 1u, ~0u);
+                         {spd::ap::avt_t::STRING}, 1u, ~0u);
     ap.add_help_arg({"--help"}, "Display this help and exit.");
     ap.add_gplv3_version_arg({"--version"}, "Output version information and exit", "1.0.0", "2018",
                              "Killian Poulaud");
-    ap.add_keyless_arg("SOURCE-DIR", "Source directory", "", {spdap::avt_t::RWX_DIR});
-    ap.add_keyless_arg("DESTINATION-DIR", "Destination directory", "", {spdap::avt_t::RWX_DIR});
+    ap.add_keyless_arg("SOURCE-DIR", "Source directory", "", {spd::ap::avt_t::RWX_DIR});
+    ap.add_keyless_arg("DESTINATION-DIR", "Destination directory", "", {spd::ap::avt_t::RWX_DIR});
     ap.parse_args((unsigned int)argc, argv);
     
     classifier::program prog(

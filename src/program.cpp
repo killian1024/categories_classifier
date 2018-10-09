@@ -22,6 +22,7 @@
 //
 
 #include <speed/speed.hpp>
+#include <speed/speed_alias.hpp>
 
 #include "program.hpp"
 
@@ -79,17 +80,17 @@ bool program::execute_directory(const std::filesystem::path& dir_pth)
         
         if (std::filesystem::is_regular_file(catg_pth))
         {
-            std::cout << spdios::set_light_blue_text
+            std::cout << spd::ios::set_light_blue_text
                       << "Parsing categories file " << catg_pth;
     
             if (!parse_categories_file(dir_pth, catg_pth))
             {
                 sucss = false;
-                std::cout << spdios::set_light_red_text << " [fail]" << spdios::newl;
+                std::cout << spd::ios::set_light_red_text << " [fail]" << spd::ios::newl;
             }
             else
             {
-                std::cout << spdios::set_light_green_text << " [ok]" << spdios::newl;
+                std::cout << spd::ios::set_light_green_text << " [ok]" << spd::ios::newl;
             }
         }
     }
@@ -109,9 +110,9 @@ bool program::execute_directory(const std::filesystem::path& dir_pth)
     }
     catch (const std::filesystem::filesystem_error& fe)
     {
-        std::cerr << spdios::set_light_red_text
+        std::cerr << spd::ios::set_light_red_text
                   << "Error executing in directory: " << dir_pth
-                  << spdios::newl;
+                  << spd::ios::newl;
     
         return false;
     }
@@ -122,13 +123,13 @@ bool program::execute_directory(const std::filesystem::path& dir_pth)
 
 void program::visit_inode(const std::filesystem::path& dir_pth)
 {
-    vistd_inos_.insert(spdsys::get_file_inode(dir_pth.c_str()));
+    vistd_inos_.insert(spd::sys::get_file_inode(dir_pth.c_str()));
 }
 
 
 bool program::is_inode_visited(const std::filesystem::path& dir_pth) const noexcept
 {
-    return vistd_inos_.count(spdsys::get_file_inode(dir_pth.c_str())) > 0;
+    return vistd_inos_.count(spd::sys::get_file_inode(dir_pth.c_str())) > 0;
 }
 
 
@@ -156,7 +157,7 @@ bool program::parse_categories_file(
             
             if (!std::filesystem::exists(dest_pth_bldr))
             {
-                if (!spdsys::mkdir(dest_pth_bldr.c_str()))
+                if (!spd::sys::mkdir(dest_pth_bldr.c_str()))
                 {
                     sucss = false;
                     continue;
@@ -213,7 +214,7 @@ bool program::make_symlink(
     
     if (!std::filesystem::exists(dest_pth_bldr))
     {
-        if (!spdsys::mkdir(dest_pth_bldr.c_str()))
+        if (!spd::sys::mkdir(dest_pth_bldr.c_str()))
         {
             return false;
         }
@@ -228,7 +229,7 @@ bool program::make_symlink(
         }
     }
     
-    return spdsys::symlink(dir_pth.c_str(), dest_pth_bldr.c_str());
+    return spd::sys::symlink(dir_pth.c_str(), dest_pth_bldr.c_str());
 }
 
 
