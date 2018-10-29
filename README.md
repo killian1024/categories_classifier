@@ -3,7 +3,7 @@
 classifier create a directory tree that represents entries in which symbolic links are used to 
 point to other directories and thus classify them. JSON files are used to specify the entries in 
 the source directories. For information about how to write them and use the program use
-`./classifier --help` command..
+`classifier --help` command.
 
 ### Build ###
 

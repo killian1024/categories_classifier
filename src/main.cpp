@@ -26,10 +26,11 @@
 int main(int argc, char* argv[])
 {
     spd::ap::arg_parser ap("classifier");
-    ap.add_help_text("create a directory tree that represents entries in which symbolic "
+    ap.add_help_text("Create a directory tree that represents entries in which symbolic "
                      "links are used to point to other directories and thus classify them. "
                      "JSON files are used to specify the entries in the source directories.\n");
-    ap.add_key_value_arg({"--categories-files", "-cf"}, "Categories files names.",
+    ap.add_key_value_arg({"--categories-files", "-cf"},
+                         "Categories files names. The default value is '.categories.json'",
                          {spd::ap::avt_t::STRING}, 1u, ~0u);
     ap.add_help_arg({"--help"}, "Display this help and exit.");
     ap.add_gplv3_version_arg({"--version"}, "Output version information and exit", "1.0.0", "2018",
