@@ -62,7 +62,8 @@ private:
     bool make_symlink(
             const std::filesystem::path& dir_pth,
             const std::filesystem::path& dest_pth,
-            boost::property_tree::ptree& nod
+            boost::property_tree::ptree& nod,
+            const std::string& link_nme = ""
     ) const;
 
 private:

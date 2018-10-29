@@ -144,12 +144,28 @@ bool program::parse_categories_file(
     {
         pt::ptree root;
         std::filesystem::path dest_pth_bldr;
+        std::filesystem::path dest_rgx_pth;
+        std::string rgx_fle_nme;
+        boost::property_tree::ptree rgx_fle_nod;
+        bool copy_to_rgx_pth = true;
         bool sucss = true;
     
         pt::read_json(catg_pth, root);
     
         dest_pth_bldr = dest_pth_;
         dest_pth_bldr /= ".";
+        dest_rgx_pth = dest_pth_;
+        dest_rgx_pth /= "Search";
+        rgx_fle_nme = dir_pth.filename();
+        
+        if (!std::filesystem::exists(dest_rgx_pth))
+        {
+            if (!spd::sys::mkdir(dest_rgx_pth.c_str()))
+            {
+                copy_to_rgx_pth = false;
+                sucss = false;
+            }
+        }
         
         for (auto& x : root)
         {
@@ -171,6 +187,20 @@ bool program::parse_categories_file(
                     sucss = false;
                     continue;
                 }
+                
+                if (copy_to_rgx_pth && x.second.data() != "false")
+                {
+                    rgx_fle_nme += " ; ";
+                    
+                    if (x.second.data() != "true")
+                    {
+                        rgx_fle_nme += x.second.data();
+                    }
+                    else
+                    {
+                        rgx_fle_nme += x.first.data();
+                    }
+                }
             }
             else
             {
@@ -181,7 +211,29 @@ bool program::parse_categories_file(
                         sucss = false;
                         continue;
                     }
+    
+                    if (copy_to_rgx_pth && y.second.data() != "false")
+                    {
+                        rgx_fle_nme += " ; ";
+        
+                        if (x.second.data() != "true")
+                        {
+                            rgx_fle_nme += y.second.data();
+                        }
+                        else
+                        {
+                            rgx_fle_nme += x.first.data();
+                        }
+                    }
                 }
+            }
+        }
+        
+        if (copy_to_rgx_pth)
+        {
+            if (!make_symlink(dir_pth, dest_rgx_pth, rgx_fle_nod, rgx_fle_nme))
+            {
+                sucss = false;
             }
         }
         
@@ -197,7 +249,8 @@ bool program::parse_categories_file(
 bool program::make_symlink(
         const std::filesystem::path& dir_pth,
         const std::filesystem::path& dest_pth,
-        boost::property_tree::ptree& nod
+        boost::property_tree::ptree& nod,
+        const std::string& link_nme
 ) const
 {
     std::filesystem::path dest_pth_bldr = dest_pth;
@@ -220,7 +273,8 @@ bool program::make_symlink(
         }
     }
     
-    dest_pth_bldr /= dir_pth.filename();
+    dest_pth_bldr /= (link_nme.empty()) ? dir_pth.filename().string() : link_nme;
+    
     if (std::filesystem::exists(dest_pth_bldr))
     {
         if (remove(dest_pth_bldr.c_str()) != 0)

@@ -26,14 +26,30 @@
 int main(int argc, char* argv[])
 {
     spd::ap::arg_parser ap("classifier");
-    ap.add_help_text("Options:");
+    ap.add_help_text("create a directory tree that represents entries in which symbolic "
+                     "links are used to point to other directories and thus classify them. "
+                     "JSON files are used to specify the entries in the source directories.\n");
     ap.add_key_value_arg({"--categories-files", "-cf"}, "Categories files names.",
                          {spd::ap::avt_t::STRING}, 1u, ~0u);
     ap.add_help_arg({"--help"}, "Display this help and exit.");
     ap.add_gplv3_version_arg({"--version"}, "Output version information and exit", "1.0.0", "2018",
                              "Killian Poulaud");
     ap.add_keyless_arg("SOURCE-DIR", "Source directory", "", {spd::ap::avt_t::RWX_DIR});
-    ap.add_keyless_arg("DESTINATION-DIR", "Destination directory", "", {spd::ap::avt_t::RWX_DIR});
+    ap.add_keyless_arg("DESTINATION-DIR", "Destination directory", "", {spd::ap::avt_t::RWXC_DIR});
+    ap.add_help_text("");
+    ap.add_help_text("Example:\n"
+                     "$ classifier ./Index ./Categories");
+    ap.add_help_text("");
+    ap.add_help_text("Example of JSON file:\n"
+                     "{\n"
+                     "    \"Published\": \"2013\",\n"
+                     "    \"Genres\": [\"Drama\", \"Shoujo\"],\n"
+                     "    \"Authors\": \"Keiko Suenobu\",\n"
+                     "    \"Serialization\": \"Bessatsu Friend\",\n"
+                     "    \"Mark\": 9,\n"
+                     "    \"Languages\": [\"French\", \"English\"],\n"
+                     "    \"Status\": \"Completed\"\n"
+                     "}");
     ap.parse_args((unsigned int)argc, argv);
     
     classifier::program prog(
