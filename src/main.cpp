@@ -56,8 +56,7 @@ int main(int argc, char* argv[])
     classifier::program prog(
             ap.get_front_arg_value_as<std::filesystem::path>("SOURCE-DIR"),
             ap.get_front_arg_value_as<std::filesystem::path>("DESTINATION-DIR"),
-            ap.get_arg_values_as<std::string>("--categories-files", {".categories.json"})
-    );
+            ap.get_arg_values_as<std::string>("--categories-files", {".categories.json"}));
     
     return prog.execute();
 }
