@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     spd::ap::arg_parser ap("classifier");
     ap.add_help_text("Create a directory tree that represents entries in which symbolic "
                      "links are used to point to other directories and thus classify them. "
-                     "JSON files are used to specify the entries in the source directories.\n");
+                     "JSON files are used to specify the entries in the source directories.");
     ap.add_key_value_arg({"--categories-files", "-cf"},
                          "Categories files names. The default value is '.categories.json'",
                          {spd::ap::avt_t::STRING}, 1u, ~0u);
