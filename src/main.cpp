@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
                      "links are used to point to other directories and thus classify them. "
                      "JSON files are used to specify the entries in the source directories.");
     ap.add_key_value_arg({"--categories-files", "-cf"},
-                         "Categories files names. The default value is '.categories.json'",
+                         "Categories files names. The default value is '.categories.json'.",
                          {spd::ap::avt_t::STRING}, 1u, ~0u);
     ap.add_help_arg({"--help"}, "Display this help and exit.");
     ap.add_gplv3_version_arg({"--version"}, "Output version information and exit", "1.0.0", "2018",
